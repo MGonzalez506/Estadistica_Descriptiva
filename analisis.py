@@ -19,17 +19,19 @@ import re
 import csv
 import numpy as np
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+
 nombre_del_documento = "/energydata_complete.csv"
 
 input_dir= str(THIS_FOLDER) + nombre_del_documento
 
+timestamp_format = "%d/%m/%Y %H:%M"
 
 if __name__ == "__main__":
-	#datos=np.genfromtxt(input_dir, delimiter=';', dtype='float',skip_header=1, usecols = range(1,21))
-	datos=np.genfromtxt(input_dir, delimiter=';', dtype='str',skip_header=1, usecols = (6))
-	#datos=np.genfromtxt(input_dir, delimiter=';', dtype=[(0,str),('6',float)],skip_header=1, usecols = (0,6))
 	
-	print(datos[100])
+	str2date = lambda x: datetime.strptime(x.decode('utf-8'), timestamp_format)
+	datos=np.genfromtxt(input_dir, delimiter=';', skip_header=1, usecols = (0,6), converters={0: str2date})
+	
+	print(datos[0])
