@@ -19,7 +19,7 @@ import re
 import csv
 import numpy as np
 import math
-#import matplotlib.pyplot as plot
+import matplotlib.pyplot as plot
 
 from datetime import datetime, timedelta
 from numpy import array
@@ -45,11 +45,11 @@ if __name__ == "__main__":
 	
 	
 	#https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html
-	cantidad_de_datos = np.size(data_humedad)
-	print("Cantidad de datos: {}".format(cantidad_de_datos))
+	cantidad_de_datos_n = np.size(data_humedad)
+	print("Cantidad de datos: {}".format(cantidad_de_datos_n))
 
 	#https://www.geeksforgeeks.org/python-math-function-sqrt/#:~:text=sqrt()%20function%20is%20an,number%20passed%20in%20the%20parameter.
-	num_clases = math.sqrt(cantidad_de_datos)
+	num_clases = math.sqrt(cantidad_de_datos_n)
 	#https://parzibyte.me/blog/2019/06/18/python-redondear-numeros/#:~:text=Redondear%20n%C3%BAmeros%20con%20Python,-Vamos%20a%20hacerlo&text=Para%20redondear%20un%20n%C3%BAmero%20basado,lo%20que%20hay%20que%20importarlas.
 	num_clases = math.ceil(num_clases)
 	print("Número de clases: {}".format(num_clases))
@@ -68,6 +68,7 @@ if __name__ == "__main__":
 	print("\n\nIntervalo: {}".format(intervalo))
 
 	step = 0.009
+	#step = 0.03
 
 	inicio_de_limite_de_intervalos = minimo - step
 	print("Inicio del límite: {}".format(inicio_de_limite_de_intervalos))
@@ -79,13 +80,7 @@ if __name__ == "__main__":
 		array_de_intervalos.append(intervalo_temporal)
 		intervalo_temporal += intervalo
 
-	print("\n\n -- -- -- La lista de intervalos es -- -- --")
-	cant_intervalos = 0
-	for i in array_de_intervalos:
-		#print(i)
-		cant_intervalos+=1
-
-	print("Cantidad de intervalos: {}\n\n\n".format(cant_intervalos))
+	print("Cantidad de intervalos: {}\n\n\n".format(np.size(array_de_intervalos)))
 
 	#Función para comparar si dos listas tienen algún dato repetido
 	#Esto con el fin de confirmar que no tengamos datos iguales a un límite	
@@ -99,18 +94,55 @@ if __name__ == "__main__":
 			print("El repetido es: {}".format(data_humedad[indice]))
 		indice+=1
 
-	res = stats.relfreq(a, numbins=cant_intervalos)
-	print("\n\nLa frecuencia relativa es:")
+	res = stats.relfreq(data_humedad, numbins=np.size(array_de_intervalos))
+	abso = stats.cumfreq(data_humedad, numbins=np.size(array_de_intervalos))
+
+	print("\n\n\n-------- Tabla de frecuencia de distribución ---------")
+	indice = 0
+	freq_absoluta = []
+	for i in array_de_intervalos[:-1]:
+		freq_absoluta.append(i)
+	freq_abs_cont = 0
+	for i in array_de_intervalos[:-1]:
+		os.write(sys.stdout.fileno(), ("\n" + str(array_de_intervalos[indice]) + " < ").encode('utf-8'))
+		for ii in data_humedad:
+			if array_de_intervalos[indice] < ii and ii < array_de_intervalos[indice+1]:
+				#os.write(sys.stdout.fileno(), (str(ii) + ", ").encode('utf-8'))
+				freq_abs_cont += 1
+				freq_absoluta[indice] = freq_abs_cont
+		if freq_abs_cont == 0:
+			freq_absoluta[indice] = 0
+		freq_abs_cont = 0
+		os.write(sys.stdout.fileno(), (" < " + str(array_de_intervalos[indice+1]) + "\n").encode('utf-8'))
+		indice += 1
+
+	print("\n\nLa frecuencia absoluta es:")
+	print(freq_absoluta)
+	print("La cantidad de datos en frecuencia absoluta es: {}".format(np.size(freq_absoluta)))
+	print("\nLa frecuencia relativa es:")
 	print(res.frequency)
+
+	freq_acumulada = []
+	for i in res.frequency:
+		freq_acumulada.append(0)
+	frecuencia_acumulada_cont = 0
+	indice = 0
+	for frecuencia in res.frequency:
+		frecuencia_acumulada_cont += frecuencia
+		freq_acumulada[indice] = frecuencia_acumulada_cont
+		indice += 1
+
+	print("\nLa frecuencia acumulada es:")
+	print(freq_acumulada)
 	print("------------------------\n\n")
 	
-	"""
 	plot.hist(x=data_humedad, bins=array_de_intervalos, color='#CCFF03', rwidth=0.85)
 	plot.title('- Medidas de humedad en la sala -')
 	plot.xlabel('Valor de Humedad (%)')
 	plot.ylabel('Frecuencia absoluta')
+	#plot.xticks(array_de_intervalos)
 	plot.show()
-	"""
+	
 	
 	
 
