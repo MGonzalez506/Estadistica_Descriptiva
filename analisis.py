@@ -12,7 +12,7 @@ import os
 import traceback
 import time
 import signal
-import fcntl
+#import fcntl
 import string
 import re
 
@@ -60,14 +60,14 @@ if __name__ == "__main__":
 	minimo = np.amin(data_humedad)
 	print("Minimo: {}".format(minimo))
 	rango = maximo - minimo
-	rango = rango + rango * 0.05
+	rango2 = rango + (rango * 0.05)
 	print("Rango: {}".format(rango))
 
-	intervalo = rango / num_clases
+	intervalo = rango2 / num_clases
 	intervalo = round(intervalo,2)
 	print("\n\nIntervalo: {}".format(intervalo))
 
-	step = 0.009
+	step = 0.0000000000005
 	#step = 0.03
 
 	inicio_de_limite_de_intervalos = minimo - step
@@ -76,11 +76,15 @@ if __name__ == "__main__":
 	print("Final del límite: {}\n\n".format(final_de_limite_de_intervalos))
 	array_de_intervalos = []
 	intervalo_temporal = inicio_de_limite_de_intervalos
-	while intervalo_temporal<final_de_limite_de_intervalos:
+	a=0
+	while intervalo_temporal<=final_de_limite_de_intervalos:
 		array_de_intervalos.append(intervalo_temporal)
 		intervalo_temporal += intervalo
-
+		a=a+1
+		
 	print("Cantidad de intervalos: {}\n\n\n".format(np.size(array_de_intervalos)))
+	print("a test:",a)
+	print("TEST ARRAY DE INTERVALOS:", array_de_intervalos)
 
 	#Función para comparar si dos listas tienen algún dato repetido
 	#Esto con el fin de confirmar que no tengamos datos iguales a un límite	
@@ -136,7 +140,7 @@ if __name__ == "__main__":
 	print(freq_acumulada)
 	print("------------------------\n\n")
 	
-	plot.hist(x=data_humedad, bins=array_de_intervalos, color='#CCFF03', rwidth=0.85)
+	plot.hist(x=data_humedad, bins=141, color='#CCFF03', rwidth=0.85)
 	plot.title('- Medidas de humedad en la sala -')
 	plot.xlabel('Valor de Humedad (%)')
 	plot.ylabel('Frecuencia absoluta')
